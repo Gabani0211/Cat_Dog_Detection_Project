@@ -1,0 +1,26 @@
+# Deploys a new Namespace for the Frontend Pod
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: frontend-dev # Change this value if you want a different namespace name
+  labels:
+    name: frontend-dev # Change this value to match metadata.name
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    app: frontend
+  name: frontend
+  namespace: frontend-dev # Change this value to match the namespace metadata.name
+spec:
+  containers:
+    - name: frontend
+      image: mgabani/dog_cat_frontend:latest
+      env:
+      - name: REACT_APP_BACKEND_BASE_URL
+        value: "http://192.168.2.141:31161"
+      - name: REACT_APP_MIN_IO_DASHBOARD
+        value: "http://192.168.2.140:30377"
+      ports:
+        - containerPort: 80

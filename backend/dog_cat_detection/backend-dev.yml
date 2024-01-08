@@ -1,0 +1,43 @@
+# Deploys a new Namespace for the Backend Pod
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: backend-dev # Change this value if you want a different namespace name
+  labels:
+    name: backend-dev # Change this value to match metadata.name
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    app: backend
+  name: backend
+  namespace: backend-dev # Change this value to match the namespace metadata.name
+spec:
+  containers:
+    - name: backend
+      image: mgabani/dog_cat_backend:v1
+      env:
+      - name: SECRET_KEY
+        value: "django-insecure-$+1uv^cnc1p&)7pf5c1-i=)6new+pnyswwuea+6&1-ag@qx5e("
+      - name: MINIO_ACCESS_KEY
+        value: "minioadmin"
+      - name: MINIO_SECRET_KEY
+        value: "minioadmin"
+      - name: MINIO_ENDPOINT
+        value: "minio:9000"
+      - name: MINIO_EXTERNAL_ENDPOINT
+        value: "192.168.2.140:30377"
+      - name: MINIO_MEDIA_FILES_BUCKET
+        value: "minioadog-cat-image-bucketdmin"
+      
+      ports:
+        - containerPort: 8000
+      volumeMounts:
+        - mountPath: ./db.sqlite3
+          name: db_volume # Corresponds to the `spec.volumes` Persistent Volume
+  volumes:
+    - name: db_volume
+      hostPath:
+        path: /mnt/disk1/db_data # Specify a path to a local drive or volume on the Kubernetes worker node
+        type: DirectoryOrCreate # The path to the last directory must exist
